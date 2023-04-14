@@ -15,4 +15,4 @@ Given the title of a paper, get a refined BibTeX citation!
 
 ## Known Issues
 
-* [dblp](https://dblp.org/) load 30 entries each time, so our program can only access the first 30 publications. Please add more details to your query in order to find the publication you want!
+* [dblp](https://dblp.org/) loads 30 entries each time, so our program can only access the first 30 publications. Please add more details to your query in order to find the publication you want!

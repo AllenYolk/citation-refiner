@@ -22,7 +22,19 @@ fn get_direct_urls_dblp(query: &str) -> Vec<String>{
 fn get_direct_urls(query: &str, website: Website) -> Vec<String>{
     match website {
         Website::Dblp => get_direct_urls_dblp(query),
-        // _ => panic!("Website {:?} is not supported!", website)
+        // _ => panic!("Website {:?} is not supported!", website),
+    }
+}
+
+fn get_bibtex_dblp(url: &str) -> Vec<String> {
+    let raw_html = get_html_text(&url);
+    select_html_text(&raw_html, "#bibtex-section > pre.select-on-click")
+}
+
+fn get_bibtex(url: &str, website: Website) -> Vec<String> {
+    match website {
+        Website::Dblp => get_bibtex_dblp(url),
+        // _ => panic!("Website {:?} is not supported!", website),
     }
 }
 
@@ -34,12 +46,10 @@ pub fn run(query: &str, website: Website, n_considered: usize) {
             break;
         }
 
-        let raw_html = get_html_text(url);
-        println!("{}", raw_html);
-        let bibtex = select_html_text(&raw_html, "#bibtex-section > pre.select-on-click");
+        let bibtexes = get_bibtex(url, website);
 
-        assert_eq!(bibtex.len(), 1);
-        copy_text(&bibtex[0]);
+        assert_eq!(bibtexes.len(), 1);
+        copy_text(&bibtexes[0]);
     }
 }
 
