@@ -1,4 +1,5 @@
-use clap::{Parser, ValueEnum};
+use clap::Parser;
+use citation_refiner::{Website, run};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -13,15 +14,14 @@ struct Cli {
 
     #[arg(short, long)]
     #[arg(default_value_t = 1)]
-    n_considered: u32,
-}
-
-#[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]
-enum Website {
-    Dblp,
+    n_considered: usize,
 }
 
 fn main() {
     let args = Cli::parse();
-    dbg!(args);
+    let query = args.query.as_deref().expect("No query provided");
+    let website = args.website;
+    let n_considered = args.n_considered;
+
+    run(query, website, n_considered)
 }

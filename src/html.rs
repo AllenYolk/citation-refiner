@@ -51,10 +51,10 @@ mod tests {
 
     #[test]
     fn select_html_text_test() {
-        let raw_html = "<div> shit, <a href=\"fuck\">derderder</a>, <a href=\"holy\">bbb</a>, haha</div>";
+        let raw_html = "<div> shit, <a href=\"fuck\">derderder\nderderder</a>, <a href=\"holy\">bbb</a>, haha</div>";
         let ans = select_html_text(&raw_html, "div a");
 
-        assert_eq!(ans[0], "derderder");
+        assert_eq!(ans[0], "derderder\nderderder");
         assert_eq!(ans[1], "bbb");
     }
 
