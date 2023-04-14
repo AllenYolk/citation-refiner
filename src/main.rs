@@ -1,3 +1,6 @@
 fn main() {
-    println!("Hello, world!");
+    let url = "https://dblp.org";
+    let response = reqwest::blocking::get(url).unwrap();
+    let body = response.text().unwrap();
+    println!("{}", body);
 }
