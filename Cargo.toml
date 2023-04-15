@@ -3,7 +3,7 @@ name = "citation_refiner"
 authors = ["AllenYolk (Yifan Huang) <allen.yfhuang@gmail.com>"]
 version = "0.0.0"
 edition = "2021"
-description = "Given the title of a paper, get a refined BibTeX citation!"
+description = "Given the title of a paper (or a query of other kind), get a refined BibTeX citation!"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

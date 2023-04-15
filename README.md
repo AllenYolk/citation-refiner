@@ -1,5 +1,5 @@
 # citation-refiner
-Given the title of a paper, get a refined BibTeX citation!
+Given the title of a paper (or a query of other kind), get a refined BibTeX citation!
 
 ## Installation
 
