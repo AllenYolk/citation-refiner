@@ -17,7 +17,6 @@ struct Cli {
     n_considered: usize,
 
     #[arg(short, long)]
-    #[arg(default_value_t = true)]
     ignore_preprint: bool,
 }
 

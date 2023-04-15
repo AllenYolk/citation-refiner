@@ -44,6 +44,10 @@ pub fn run(query: &str, website: Website, n_considered: usize, ignore_preprint: 
 
     let mut i = 0;
     for url in urls {
+        if i >= n_considered {
+            break;
+        }
+
         let bibtexes = get_bibtex(&url, website);
         assert_eq!(bibtexes.len(), 1);
 
@@ -53,21 +57,21 @@ pub fn run(query: &str, website: Website, n_considered: usize, ignore_preprint: 
         }
         println!("Trial {} - Get BibTeX:\n{}", &i, bibtex);
         
-        if i < n_considered - 1 {
+        if i < n_considered {
             println!("Satisfied? [ 'y' or 'Y' -> yes / others -> no ] ");
-            let mut resp: String = String::new();
             stdout().flush().unwrap();
-
+            let mut resp: String = String::new();
             stdin().read_line(&mut resp).unwrap();
+
             if resp.trim().to_lowercase() != "y" {
                 i += 1;
                 continue;
+            } else {
+                copy_text(bibtex);
+                println!("BibTeX copied to your clipboard!");
+                return;
             }
         }
-
-        copy_text(bibtex);
-        println!("BibTeX copied to your clipboard!");
-        return;
     }
 
     println!("No satisfying BibTeX is found. Sorry...🤧");
