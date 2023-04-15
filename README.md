@@ -11,6 +11,7 @@ Given the title of a paper (or a query of other kind), get a refined BibTeX cita
 * [ ] Add installation guide.
 * [x] Refine the command line interface.
 * [x] Add output prompts.
+* [ ] Accelerate the program using async.
 * [ ] ...
 
 ## Known Issues
