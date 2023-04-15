@@ -9,8 +9,8 @@ Given the title of a paper, get a refined BibTeX citation!
 
 * [x] Add the basic funtion: look for refined BibTeX citation from [dblp](https://dblp.org/).
 * [ ] Add installation guide.
-* [ ] Refine the command line interface.
-* [ ] Add output prompts.
+* [x] Refine the command line interface.
+* [x] Add output prompts.
 * [ ] ...
 
 ## Known Issues

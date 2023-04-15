@@ -4,6 +4,7 @@ mod html;
 use clap::ValueEnum;
 use html::*;
 use clipboard::*;
+use std::io::{Write, stdin, stdout};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]
 pub enum Website {
@@ -38,19 +39,38 @@ fn get_bibtex(url: &str, website: Website) -> Vec<String> {
     }
 }
 
-pub fn run(query: &str, website: Website, n_considered: usize) {
+pub fn run(query: &str, website: Website, n_considered: usize, ignore_preprint: bool) {
     let urls = get_direct_urls(query, website);
 
-    for (i, url) in urls.iter().enumerate() {
-        if i >= n_considered {
-            break;
+    let mut i = 0;
+    for url in urls {
+        let bibtexes = get_bibtex(&url, website);
+        assert_eq!(bibtexes.len(), 1);
+
+        let bibtex = &bibtexes[0];
+        if ignore_preprint && bibtex.replace(" ", "").contains("eprinttype={") {
+            continue;
+        }
+        println!("Trial {} - Get BibTeX:\n{}", &i, bibtex);
+        
+        if i < n_considered - 1 {
+            println!("Satisfied? [ 'y' or 'Y' -> yes / others -> no ] ");
+            let mut resp: String = String::new();
+            stdout().flush().unwrap();
+
+            stdin().read_line(&mut resp).unwrap();
+            if resp.trim().to_lowercase() != "y" {
+                i += 1;
+                continue;
+            }
         }
 
-        let bibtexes = get_bibtex(url, website);
-
-        assert_eq!(bibtexes.len(), 1);
-        copy_text(&bibtexes[0]);
+        copy_text(bibtex);
+        println!("BibTeX copied to your clipboard!");
+        return;
     }
+
+    println!("No satisfying BibTeX is found. Sorry...🤧");
 }
 
 #[cfg(test)]
@@ -69,13 +89,7 @@ mod tests {
     #[test]
     fn run_test() {
         let query = "Attention is All you Need, vaswani";
-        run(query, Website::Dblp, 1);
+        run(query, Website::Dblp, 1, true);
         assert!(get_copied_text().starts_with("@inproceedings{DBLP:conf/nips/VaswaniSPUJGKP17,"));
-
-        run(query, Website::Dblp, 2);
-        assert!(get_copied_text().starts_with("@article{DBLP:journals/corr/VaswaniSPUJGKP17,"));
-
-        run(query, Website::Dblp, 114514);
-        assert!(get_copied_text().starts_with("@article{DBLP:journals/corr/VaswaniSPUJGKP17,"));
     }
 }

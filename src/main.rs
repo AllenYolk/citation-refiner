@@ -15,6 +15,10 @@ struct Cli {
     #[arg(short, long)]
     #[arg(default_value_t = 1)]
     n_considered: usize,
+
+    #[arg(short, long)]
+    #[arg(default_value_t = true)]
+    ignore_preprint: bool,
 }
 
 fn main() {
@@ -22,6 +26,7 @@ fn main() {
     let query = args.query.as_deref().expect("No query provided");
     let website = args.website;
     let n_considered = args.n_considered;
+    let ignore_preprint = args.ignore_preprint;
 
-    run(query, website, n_considered)
+    run(query, website, n_considered, ignore_preprint)
 }
