@@ -1,5 +1,5 @@
+use citation_refiner::{run, Website};
 use clap::Parser;
-use citation_refiner::{Website, run};
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]

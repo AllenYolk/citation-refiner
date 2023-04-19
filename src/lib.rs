@@ -2,16 +2,16 @@ mod clipboard;
 mod html;
 
 use clap::ValueEnum;
-use html::*;
 use clipboard::*;
-use std::io::{Write, stdin, stdout};
+use html::*;
+use std::io::{stdin, stdout, Write};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]
 pub enum Website {
     Dblp,
 }
 
-fn get_direct_urls_dblp(query: &str) -> Vec<String>{
+fn get_direct_urls_dblp(query: &str) -> Vec<String> {
     let query_in_url = query.replace(" ", "%20");
     let base_url = format!("https://dblp.org/search?q={}", query_in_url);
     println!("url: {}", &base_url);
@@ -20,7 +20,7 @@ fn get_direct_urls_dblp(query: &str) -> Vec<String>{
     select_html_attribute(&raw_html, "nav.publ > ul > li > div > a[rel]", "href")
 }
 
-fn get_direct_urls(query: &str, website: Website) -> Vec<String>{
+fn get_direct_urls(query: &str, website: Website) -> Vec<String> {
     match website {
         Website::Dblp => get_direct_urls_dblp(query),
         // _ => panic!("Website {:?} is not supported!", website),
@@ -56,7 +56,7 @@ pub fn run(query: &str, website: Website, n_considered: usize, ignore_preprint: 
             continue;
         }
         println!("Trial {} - Get BibTeX:\n{}", &i, bibtex);
-        
+
         if i < n_considered {
             println!("Satisfied? [ 'y' or 'Y' -> yes / others -> no ] ");
             stdout().flush().unwrap();
@@ -86,8 +86,14 @@ mod tests {
         let query = "Attention is All you Need, vaswani";
 
         let res_dblp = get_direct_urls(query, Website::Dblp);
-        assert_eq!(res_dblp[0], "https://dblp.org/rec/conf/nips/VaswaniSPUJGKP17.html?view=bibtex");
-        assert_eq!(res_dblp[1], "https://dblp.org/rec/journals/corr/VaswaniSPUJGKP17.html?view=bibtex");
+        assert_eq!(
+            res_dblp[0],
+            "https://dblp.org/rec/conf/nips/VaswaniSPUJGKP17.html?view=bibtex"
+        );
+        assert_eq!(
+            res_dblp[1],
+            "https://dblp.org/rec/journals/corr/VaswaniSPUJGKP17.html?view=bibtex"
+        );
     }
 
     #[test]

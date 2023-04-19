@@ -1,8 +1,7 @@
 use scraper::{Html, Selector};
 
 pub fn get_html_text(url: &str) -> String {
-    reqwest::blocking::get(url).unwrap()
-        .text().unwrap()
+    reqwest::blocking::get(url).unwrap().text().unwrap()
 }
 
 pub fn select_html_text(raw_html: &str, raw_selector: &str) -> Vec<String> {
@@ -16,11 +15,15 @@ pub fn select_html_text(raw_html: &str, raw_selector: &str) -> Vec<String> {
     let mut ret: Vec<String> = Vec::new();
     for e in html.select(&selector) {
         ret.push(e.text().collect());
-    };
+    }
     ret
 }
 
-pub fn select_html_attribute(raw_html: &str, raw_selector: &str, attribute_name: &str) -> Vec<String> {
+pub fn select_html_attribute(
+    raw_html: &str,
+    raw_selector: &str,
+    attribute_name: &str,
+) -> Vec<String> {
     let html = if raw_html.starts_with("<!DOCTYPE html>") {
         Html::parse_document(raw_html)
     } else {
@@ -32,7 +35,7 @@ pub fn select_html_attribute(raw_html: &str, raw_selector: &str, attribute_name:
     for e in html.select(&selector) {
         let attr = e.value().attr(attribute_name).unwrap();
         ret.push(String::from(attr));
-    };
+    }
     ret
 }
 
