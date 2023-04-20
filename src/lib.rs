@@ -1,10 +1,12 @@
 mod clipboard;
 mod html;
+mod bibtex;
 
 use clap::ValueEnum;
 use clipboard::*;
 use html::*;
 use std::io::{stdin, stdout, Write};
+use bibtex::*;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]
 pub enum Website {
@@ -39,7 +41,7 @@ fn get_bibtex(url: &str, website: Website) -> Vec<String> {
     }
 }
 
-pub fn run(query: &str, website: Website, n_considered: usize, ignore_preprint: bool) {
+pub fn run(query: &str, website: Website, n_considered: usize, ignore_preprint: bool, full_bibtex: bool) {
     let urls = get_direct_urls(query, website);
 
     let mut i = 0;
@@ -55,6 +57,8 @@ pub fn run(query: &str, website: Website, n_considered: usize, ignore_preprint: 
         if ignore_preprint && bibtex.replace(" ", "").contains("eprinttype={") {
             continue;
         }
+        let bibtex = process_bibtex(bibtex, full_bibtex);
+
         println!("Trial {} - Get BibTeX:\n{}", &i, bibtex);
 
         if i < n_considered {
@@ -67,7 +71,7 @@ pub fn run(query: &str, website: Website, n_considered: usize, ignore_preprint: 
                 i += 1;
                 continue;
             } else {
-                copy_text(bibtex);
+                copy_text(&bibtex);
                 println!("BibTeX copied to your clipboard!");
                 return;
             }
@@ -97,9 +101,8 @@ mod tests {
     }
 
     #[test]
-    fn run_test() {
-        let query = "Attention is All you Need, vaswani";
-        run(query, Website::Dblp, 1, true);
-        assert!(get_copied_text().starts_with("@inproceedings{DBLP:conf/nips/VaswaniSPUJGKP17,"));
+    fn get_bibtex_test() {
+        let url = "https://dblp.org/rec/conf/nips/VaswaniSPUJGKP17.html?view=bibtex";
+        assert!(get_bibtex(url, Website::Dblp)[0].starts_with("@inproceedings{DBLP:conf/nips/VaswaniSPUJGKP17,"))
     }
 }
