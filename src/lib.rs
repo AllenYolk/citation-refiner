@@ -1,12 +1,12 @@
+mod bibtex;
 mod clipboard;
 mod html;
-mod bibtex;
 
+use bibtex::*;
 use clap::ValueEnum;
 use clipboard::*;
 use html::*;
 use std::io::{stdin, stdout, Write};
-use bibtex::*;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, ValueEnum)]
 pub enum Website {
@@ -41,7 +41,13 @@ fn get_bibtex(url: &str, website: Website) -> Vec<String> {
     }
 }
 
-pub fn run(query: &str, website: Website, n_considered: usize, ignore_preprint: bool, full_bibtex: bool) {
+pub fn run(
+    query: &str,
+    website: Website,
+    n_considered: usize,
+    ignore_preprint: bool,
+    full_bibtex: bool,
+) {
     let urls = get_direct_urls(query, website);
 
     let mut i = 0;
@@ -103,6 +109,7 @@ mod tests {
     #[test]
     fn get_bibtex_test() {
         let url = "https://dblp.org/rec/conf/nips/VaswaniSPUJGKP17.html?view=bibtex";
-        assert!(get_bibtex(url, Website::Dblp)[0].starts_with("@inproceedings{DBLP:conf/nips/VaswaniSPUJGKP17,"))
+        assert!(get_bibtex(url, Website::Dblp)[0]
+            .starts_with("@inproceedings{DBLP:conf/nips/VaswaniSPUJGKP17,"))
     }
 }

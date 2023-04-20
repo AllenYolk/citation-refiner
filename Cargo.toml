@@ -1,7 +1,7 @@
 [package]
 name = "citation_refiner"
 authors = ["AllenYolk (Yifan Huang) <allen.yfhuang@gmail.com>"]
-version = "0.0.0"
+version = "0.1.0"
 edition = "2021"
 description = "Given the title of a paper (or a query of other kind), get a refined BibTeX citation!"
 

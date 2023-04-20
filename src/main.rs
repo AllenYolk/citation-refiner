@@ -18,6 +18,9 @@ struct Cli {
 
     #[arg(short, long)]
     ignore_preprint: bool,
+
+    #[arg(short, long)]
+    full_bibtex: bool,
 }
 
 fn main() {
@@ -26,6 +29,7 @@ fn main() {
     let website = args.website;
     let n_considered = args.n_considered;
     let ignore_preprint = args.ignore_preprint;
+    let full_bibtex = args.full_bibtex;
 
-    run(query, website, n_considered, ignore_preprint)
+    run(query, website, n_considered, ignore_preprint, full_bibtex)
 }
