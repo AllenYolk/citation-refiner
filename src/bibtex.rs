@@ -1,4 +1,4 @@
-const FILTERED_FIELDS: [&str; 4] = ["url", "timestamp", "biburl", "bibsource"];
+const FILTERED_FIELDS: [&str; 5] = ["url", "timestamp", "biburl", "bibsource", "doi"];
 
 pub fn process_bibtex(bibtex: &str, full_bibtex: bool) -> String {
     if full_bibtex {
@@ -27,7 +27,8 @@ mod tests {
         let bibtex = r#"@inproceedings{x,
             author       = {Ashish Vaswani},
             editor       = {Isabelle Guyon},
-            title        = {Attention is All you Need},
+            title        = {Attention is xxx},
+            doi          = {1145141919810}
             booktitle    = {Advances in Neural Information Processing Systems},
             url          = {https://proceedings.neurips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html},
             pages        = {5998--6008},
@@ -42,7 +43,7 @@ mod tests {
         let correct = r#"@inproceedings{x,
             author       = {Ashish Vaswani},
             editor       = {Isabelle Guyon},
-            title        = {Attention is All you Need},
+            title        = {Attention is xxx},
             booktitle    = {Advances in Neural Information Processing Systems},
             pages        = {5998--6008},
             year         = {2017},
