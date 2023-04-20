@@ -13,7 +13,7 @@ struct Cli {
     website: Website,
 
     #[arg(short, long)]
-    #[arg(default_value_t = 1)]
+    #[arg(default_value_t = 5)]
     n_considered: usize,
 
     #[arg(short, long)]
