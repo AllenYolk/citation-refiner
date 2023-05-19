@@ -12,6 +12,7 @@ Given the title of a paper (or a query of other kind), get a refined BibTeX cita
 * [x] Refine the command line interface.
 * [x] Add output prompts.
 * [ ] Accelerate the program using async.
+* [ ] Parse the refined bibtex (using `lalrpop`, for instance), and remove some useless fields.
 * [ ] ...
 
 ## Known Issues

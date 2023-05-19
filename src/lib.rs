@@ -13,28 +13,35 @@ pub enum Website {
     Dblp,
 }
 
-fn get_direct_urls_dblp(query: &str) -> Vec<String> {
+pub enum RunError {
+    GetUrlError,
+    GetBibtexError { url: String },
+    MultipleBibtexError { url: String },
+    CopyToClipboardError,
+}
+
+fn get_direct_urls_dblp(query: &str) -> Result<Vec<String>, ()> {
     let query_in_url = query.replace(" ", "%20");
     let base_url = format!("https://dblp.org/search?q={}", query_in_url);
     println!("url: {}", &base_url);
 
-    let raw_html = get_html_text(&base_url);
+    let raw_html = get_html_text(&base_url)?;
     select_html_attribute(&raw_html, "nav.publ > ul > li > div > a[rel]", "href")
 }
 
-fn get_direct_urls(query: &str, website: Website) -> Vec<String> {
+fn get_direct_urls(query: &str, website: Website) -> Result<Vec<String>, ()> {
     match website {
         Website::Dblp => get_direct_urls_dblp(query),
         // _ => panic!("Website {:?} is not supported!", website),
     }
 }
 
-fn get_bibtex_dblp(url: &str) -> Vec<String> {
-    let raw_html = get_html_text(&url);
+fn get_bibtex_dblp(url: &str) -> Result<Vec<String>, ()> {
+    let raw_html = get_html_text(&url)?;
     select_html_text(&raw_html, "#bibtex-section > pre.select-on-click")
 }
 
-fn get_bibtex(url: &str, website: Website) -> Vec<String> {
+fn get_bibtex(url: &str, website: Website) -> Result<Vec<String>, ()> {
     match website {
         Website::Dblp => get_bibtex_dblp(url),
         // _ => panic!("Website {:?} is not supported!", website),
@@ -47,8 +54,10 @@ pub fn run(
     n_considered: usize,
     ignore_preprint: bool,
     full_bibtex: bool,
-) {
-    let urls = get_direct_urls(query, website);
+) -> Result<(), RunError>{
+    let Ok(urls) = get_direct_urls(query, website) else {
+        return Err(RunError::GetUrlError);
+    };
 
     let mut i = 0;
     for url in urls {
@@ -56,8 +65,12 @@ pub fn run(
             break;
         }
 
-        let bibtexes = get_bibtex(&url, website);
-        assert_eq!(bibtexes.len(), 1);
+        let Ok(bibtexes) = get_bibtex(&url, website) else {
+            return Err(RunError::GetBibtexError{ url });
+        };
+        if bibtexes.len() != 1 {
+            return Err(RunError::MultipleBibtexError{ url });
+        }
 
         let bibtex = &bibtexes[0];
         if ignore_preprint && bibtex.replace(" ", "").contains("eprinttype={") {
@@ -77,14 +90,17 @@ pub fn run(
                 i += 1;
                 continue;
             } else {
-                copy_text(&bibtex);
+                if let Err(_) = copy_text(&bibtex) {
+                    return Err(RunError::CopyToClipboardError);
+                };
                 println!("BibTeX copied to your clipboard!");
-                return;
+                return Ok(());
             }
         }
     }
 
     println!("No satisfying BibTeX is found. Sorry...🤧");
+    Ok(())
 }
 
 #[cfg(test)]
@@ -95,7 +111,7 @@ mod tests {
     fn direct_urls_test() {
         let query = "Attention is All you Need, vaswani";
 
-        let res_dblp = get_direct_urls(query, Website::Dblp);
+        let res_dblp = get_direct_urls(query, Website::Dblp).unwrap();
         assert_eq!(
             res_dblp[0],
             "https://dblp.org/rec/conf/nips/VaswaniSPUJGKP17.html?view=bibtex"
@@ -109,7 +125,7 @@ mod tests {
     #[test]
     fn get_bibtex_test() {
         let url = "https://dblp.org/rec/conf/nips/VaswaniSPUJGKP17.html?view=bibtex";
-        assert!(get_bibtex(url, Website::Dblp)[0]
+        assert!(get_bibtex(url, Website::Dblp).unwrap()[0]
             .starts_with("@inproceedings{DBLP:conf/nips/VaswaniSPUJGKP17,"))
     }
 }

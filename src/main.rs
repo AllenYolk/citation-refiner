@@ -1,5 +1,6 @@
-use citation_refiner::{run, Website};
+use citation_refiner::{run, Website, RunError};
 use clap::Parser;
+use std::process::exit;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -31,5 +32,24 @@ fn main() {
     let ignore_preprint = args.ignore_preprint;
     let full_bibtex = args.full_bibtex;
 
-    run(query, website, n_considered, ignore_preprint, full_bibtex)
+    match run(query, website, n_considered, ignore_preprint, full_bibtex) {
+        Err(e) => {
+            match e {
+                RunError::GetUrlError => {
+                    eprintln!("Error: cannot get direct urls from website {:?}", website);
+                },
+                RunError::GetBibtexError{ url } => {
+                    eprintln!("Error: cannot get bibtex from url {}", url);
+                },
+                RunError::MultipleBibtexError{url} => {
+                    eprintln!("Error: found multiple bibtex entries on {}, \nwhich is problematic!", url)
+                },
+                RunError::CopyToClipboardError => {
+                    eprintln!("Error: cannot copy bibtex to the clipboard!");
+                }
+            }
+            exit(-1);
+        },
+        _ => { () }
+    }
 }
